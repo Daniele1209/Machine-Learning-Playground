@@ -1,7 +1,9 @@
 import pandas as pd
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
-
+import mglearn
+import matplotlib
+import numpy as np
 # --- basic stuff ---
 
 # we load the Bunch object ftom sklearn.datasets
@@ -38,4 +40,5 @@ print(y_test.shape)
 
 # --- look at the Data ---
 
-
+iris_dataframe = pd.DataFrame(X_train, columns=iris_dataset.feature_names)
+pd.plotting.scatter_matrix(iris_dataframe, c=y_train, figsize=(15, 15), marker = 'o', hist_kwds = {'bins': 20}, s=60, alpha= .8, cmap = mglearn.cm3)
