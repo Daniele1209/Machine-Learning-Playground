@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
+from sklearn.model_selection import StratifiedShuffleSplit
 from zlib import crc32
 
 #fetch the data from the github repo
@@ -35,6 +36,8 @@ housing.head()
 housing.hist(bins = 50, figsize = (20, 15))
 plt.show()
 
+#-------------------------------split the data randomly---------------------------------
+
 #splitting the training set so we can test the accuracy of the predictions later on
 
 #variant 1
@@ -64,9 +67,35 @@ def split_train_test_by_id(data, test_ratio, id_column):
 #variant 3 and variant 4 will remain at a ratio of 20% of data, even if the dataset is updated
 
 #we will use variant 4 bcz it suits our dataset better
-housing_with_id = housing.reset_index()   #adds one more column, called "index"
-train_set, test_set = split_train_test_by_id(housing_with_id, 0.2, "index")
+def using_var_4():
+    housing_with_id = housing.reset_index()   #adds one more column, called "index"
+    train_set, test_set = split_train_test_by_id(housing_with_id, 0.2, "index")
 
 #you can also build an ID by playing around with the parameters of the database like so:
-housing_with_id["id"] = housing["longitude"] * 1000 + housing["latitude"]
-train_set, test_set = split_train_test_by_id(housing_with_id, 0.2, "id")
+def using_build_id():
+    housing_with_id = housing.reset_index()
+    housing_with_id["id"] = housing["longitude"] * 1000 + housing["latitude"]
+    train_set, test_set = split_train_test_by_id(housing_with_id, 0.2, "id")
+
+#or use the sklearn library
+def using_sklearn():
+    train_set, test_set = train_test_split(housing, test_size = 0.2, random_state = 42)
+
+#----------------------------split the data using stratified sampling-------------------------------
+
+def using_stratified_sampling():
+    housing["income_cat"] = pd.cut(housing["median_income"],
+                                   bins = [0., 1.5, 3.0, 4.5, 6., np.inf],
+                                   labels = [1, 2, 3, 4, 5])
+    housing["income_cat"].hist()
+    plt.show()
+
+    split = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
+    for train_index, test_index in split.split(housing, housing["income_cat"]):
+        strat_train_set = housing.loc[train_index]
+        strat_test_set = housing.loc[test_index]
+        print(strat_test_set["income_cat"].value_counts() / len(strat_test_set))
+
+    #remove "income_cat" so the data goes back to normal
+    for set_ in (strat_train_set, strat_test_set):
+        set_.drop("income_cat", axis=1, inplace=True)
