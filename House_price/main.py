@@ -4,6 +4,8 @@ import urllib
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from zlib import crc32
 
 #fetch the data from the github repo
 
@@ -35,6 +37,7 @@ plt.show()
 
 #splitting the training set so we can test the accuracy of the predictions later on
 
+#variant 1
 def split_train_test(data, test_ratio):
     shuffled_indices = np.random.permutation(len(data))
     test_set_size = int(len(data) * test_ratio)
@@ -42,4 +45,28 @@ def split_train_test(data, test_ratio):
     train_indices = shuffled_indices[test_set_size:]
     return data.iloc[train_indices], data.iloc[test_indices]
 
-train_set, test_set = split_train_test(housing, 0.2)
+#variant 2
+def var_2():
+    train_set, test_set = split_train_test(housing, 0.2)
+
+#variant 1 and variant 2 can be used once, but they will break the next time we fetch an updated data set
+
+#variant 3
+def test_set_check(identifier, test_ratio):
+    return(np.int64(identifier)) & 0xffffffff < test_ratio * 2**32
+
+#variant 4
+def split_train_test_by_id(data, test_ratio, id_column):
+    ids = data[id_column]
+    in_test_set = ids.apply(lambda id_: test_set_check(id_, test_ratio))
+    return data.loc[~in_test_set], data.loc[in_test_set]
+
+#variant 3 and variant 4 will remain at a ratio of 20% of data, even if the dataset is updated
+
+#we will use variant 4 bcz it suits our dataset better
+housing_with_id = housing.reset_index()   #adds one more column, called "index"
+train_set, test_set = split_train_test_by_id(housing_with_id, 0.2, "index")
+
+#you can also build an ID by playing around with the parameters of the database like so:
+housing_with_id["id"] = housing["longitude"] * 1000 + housing["latitude"]
+train_set, test_set = split_train_test_by_id(housing_with_id, 0.2, "id")
