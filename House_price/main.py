@@ -99,3 +99,19 @@ def using_stratified_sampling():
     #remove "income_cat" so the data goes back to normal
     for set_ in (strat_train_set, strat_test_set):
         set_.drop("income_cat", axis=1, inplace=True)
+
+#------------------------------------visualizing the data----------------------------------------
+
+housing.plot(kind="scatter", x="longitude", y="latitude")
+#adding alpha = 0.1 makes it easier to visualize places of high density
+housing.plot(kind="scatter", x="longitude", y="latitude", alpha=0.1)
+plt.show()
+
+#get a more informative colored map
+housing.plot(kind="scatter", x="longitude", y="latitude", alpha=0.4,
+             s=housing["population"]/100, label="population", figsize=(10,7),
+             c="median_house_value", cmap=plt.get_cmap("jet"), colorbar=True)
+plt.show()
+
+#-------------------------------looking for correlations----------------------------
+
