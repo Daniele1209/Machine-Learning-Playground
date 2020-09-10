@@ -115,3 +115,10 @@ plt.show()
 
 #-------------------------------looking for correlations----------------------------
 
+#if data set not too large, use standard corelation coefficient, using corr() fct
+corr_matrix = housing.corr()
+
+#look how each attribute correlates with the median house value
+corr_matrix["median_house_value"].sort_values(ascending=False)
+
+
