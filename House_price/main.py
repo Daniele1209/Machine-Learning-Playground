@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import StratifiedShuffleSplit
 from zlib import crc32
+from pandas.plotting import scatter_matrix
 
 #fetch the data from the github repo
 
@@ -118,7 +119,10 @@ plt.show()
 #if data set not too large, use standard corelation coefficient, using corr() fct
 corr_matrix = housing.corr()
 
-#look how each attribute correlates with the median house value
+#look how each attribute correlates with the median house value (add print to see the values)
 corr_matrix["median_house_value"].sort_values(ascending=False)
 
-
+#--------------------------Preparing the data for Machine Learning Algorithms--------------------------
+using_stratified_sampling()
+housing = strat_train_set.drop("median_house_value", axis=1)
+house_labels = strat_train_set["median_house_value"].copy()
