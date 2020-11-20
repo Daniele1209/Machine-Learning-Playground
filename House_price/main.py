@@ -6,6 +6,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import StratifiedShuffleSplit
+from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import OrdinalEncoder
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.compose import ColumnTransformer
+
 from zlib import crc32
 from pandas.plotting import scatter_matrix
 
@@ -84,22 +92,21 @@ def using_sklearn():
 
 #----------------------------split the data using stratified sampling-------------------------------
 
-def using_stratified_sampling():
-    housing["income_cat"] = pd.cut(housing["median_income"],
-                                   bins = [0., 1.5, 3.0, 4.5, 6., np.inf],
-                                   labels = [1, 2, 3, 4, 5])
-    housing["income_cat"].hist()
-    plt.show()
+housing["income_cat"] = pd.cut(housing["median_income"],
+                            bins = [0., 1.5, 3.0, 4.5, 6., np.inf],
+                            labels = [1, 2, 3, 4, 5])
+housing["income_cat"].hist()
+plt.show()
 
-    split = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
-    for train_index, test_index in split.split(housing, housing["income_cat"]):
-        strat_train_set = housing.loc[train_index]
-        strat_test_set = housing.loc[test_index]
-        print(strat_test_set["income_cat"].value_counts() / len(strat_test_set))
+split = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
+for train_index, test_index in split.split(housing, housing["income_cat"]):
+    strat_train_set = housing.loc[train_index]
+    strat_test_set = housing.loc[test_index]
+    print(strat_test_set["income_cat"].value_counts() / len(strat_test_set))
 
-    #remove "income_cat" so the data goes back to normal
-    for set_ in (strat_train_set, strat_test_set):
-        set_.drop("income_cat", axis=1, inplace=True)
+#remove "income_cat" so the data goes back to normal
+for set_ in (strat_train_set, strat_test_set):
+    set_.drop("income_cat", axis=1, inplace=True)
 
 #------------------------------------visualizing the data----------------------------------------
 
@@ -123,6 +130,80 @@ corr_matrix = housing.corr()
 corr_matrix["median_house_value"].sort_values(ascending=False)
 
 #--------------------------Preparing the data for Machine Learning Algorithms--------------------------
-using_stratified_sampling()
+
 housing = strat_train_set.drop("median_house_value", axis=1)
 house_labels = strat_train_set["median_house_value"].copy()
+
+#--------------------------Data Cleaning--------------------------
+
+#1. Get rid of the corresponding districts.
+#housing.dropna(subset=["total_bedrooms"])
+#2. Get rid of the whole attribute.
+#housing.drop("total_bedrooms", axis=1)
+#3. Set the values to some value (zero, the mean, the median, etc.).
+median = housing["total_bedrooms"].median()
+housing["total_bedrooms"].fillna(median, inplace=True)
+
+#we can use a Scikit-Learn fct to fill in the missing values
+imputer = SimpleImputer(strategy = "median")
+housing_num = housing.drop("ocean_proximity", axis = 1) #copy of the data without string value
+
+X = imputer.transform(housing_num) #rez = plain numpy array containing transformed features
+housing_tr = pd.DataFrame(X, columns = housing_num.columns, index = housing_num.index)
+
+#--------------------------Handling Text and Categorical Attributes--------------------------
+
+#convert text based categories from text to numbers
+housing_cat = housing[["ocean_proximity"]]
+ordinal_encoder = OrdinalEncoder()
+housing_cat_encoded = ordinal_encoder.fit_transform(housing_cat)
+
+#hot-one encoding
+cat_encoder = OneHotEncoder()
+housing_cat_1hot = cat_encoder.fit_transform(housing_cat)
+housing_cat_1hot.toarray()
+
+#--------------------------Custom Transformers--------------------------
+
+#used for tasks like cleanup operations, combining attributes
+rooms_ix, bedrooms_ix, population_ix, households_ix = 3, 4, 5, 6
+class CombinedAttributesAdder(BaseEstimator, TransformerMixin):
+    def __init__(self, add_bedrooms_per_room = True): # no *args or **kargs
+        self.add_bedrooms_per_room = add_bedrooms_per_room
+
+    def fit(self, X, y=None):
+        return self # nothing else to do
+
+    def transform(self, X):
+        rooms_per_household = X[:, rooms_ix] / X[:, households_ix]
+        population_per_household = X[:, population_ix] / X[:, households_ix]
+        if self.add_bedrooms_per_room:
+            bedrooms_per_room = X[:, bedrooms_ix] / X[:, rooms_ix]
+            return np.c_[X, rooms_per_household, population_per_household,bedrooms_per_room]
+        else:
+            return np.c_[X, rooms_per_household, population_per_household]
+
+attr_adder = CombinedAttributesAdder(addr_bedrroms_per_room = False)
+housing_extra_attribs = attr_adder.transform(housing.values)
+
+#--------------------------Feature Scaling--------------------------
+
+# use min-max scaling and standardization to get all attributes to have the same scale
+
+#--------------------------Transformation Pipelines--------------------------
+
+num_pipeline = Pipeline([
+    ('imputer', SimpleImputer(strategy = "median")),
+    ('attribs_adder', CombinedAttributesAdder()),
+    ('std_scaler', StandardScaler())])
+
+num_attribs = list(housing_num)
+cat_attribs = ["ocean_proximity"]
+full_pipeline = ColumnTransformer([
+("num", num_pipeline, num_attribs),
+("cat", OneHotEncoder(), cat_attribs),
+])
+housing_prepared = full_pipeline.fit_transform(housing)
+
+#--------------------------Select and Train a Model--------------------------
+
