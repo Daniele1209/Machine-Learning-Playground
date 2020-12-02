@@ -13,7 +13,10 @@ from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.compose import ColumnTransformer
-
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.model_selection import cross_val_score
 from zlib import crc32
 from pandas.plotting import scatter_matrix
 
@@ -145,8 +148,10 @@ median = housing["total_bedrooms"].median()
 housing["total_bedrooms"].fillna(median, inplace=True)
 
 #we can use a Scikit-Learn fct to fill in the missing values
+
 imputer = SimpleImputer(strategy = "median")
 housing_num = housing.drop("ocean_proximity", axis = 1) #copy of the data without string value
+imputer.fit(housing_num)
 
 X = imputer.transform(housing_num) #rez = plain numpy array containing transformed features
 housing_tr = pd.DataFrame(X, columns = housing_num.columns, index = housing_num.index)
@@ -183,8 +188,8 @@ class CombinedAttributesAdder(BaseEstimator, TransformerMixin):
         else:
             return np.c_[X, rooms_per_household, population_per_household]
 
-attr_adder = CombinedAttributesAdder(addr_bedrroms_per_room = False)
-housing_extra_attribs = attr_adder.transform(housing.values)
+#attr_adder = CombinedAttributesAdder(add_bedrroms_per_room = False)
+#housing_extra_attribs = attr_adder.transform(housing.values)
 
 #--------------------------Feature Scaling--------------------------
 
@@ -196,6 +201,7 @@ num_pipeline = Pipeline([
     ('imputer', SimpleImputer(strategy = "median")),
     ('attribs_adder', CombinedAttributesAdder()),
     ('std_scaler', StandardScaler())])
+housing_num_tr = num_pipeline.fit_transform(housing_num)
 
 num_attribs = list(housing_num)
 cat_attribs = ["ocean_proximity"]
@@ -206,4 +212,42 @@ full_pipeline = ColumnTransformer([
 housing_prepared = full_pipeline.fit_transform(housing)
 
 #--------------------------Select and Train a Model--------------------------
+#make a linear regression model
+lin_reg = LinearRegression()
+lin_reg.fit(housing_prepared, house_labels)
 
+some_data = housing.iloc[:5]
+some_labels = house_labels.iloc[:5]
+some_data_prepared = full_pipeline.transform(some_data)
+print("Predictions: " + str(lin_reg.predict(some_data_prepared)))
+print("Labels: " + str(list(some_labels)))
+
+#we test the accuracy of the trained data by using mean_squared_error()
+housing_prediction = lin_reg.predict(housing_prepared)
+lin_mse = mean_squared_error(house_labels, housing_prediction)
+lin_rmse = np.sqrt(lin_mse)
+print(lin_rmse)
+
+#train a Decision Tree Regression
+tree_reg = DecisionTreeRegressor()
+tree_reg.fit(housing_prepared, house_labels)
+housing_predictions = tree_reg.predict(housing_prepared)
+tree_mse = mean_squared_error(house_labels, housing_prediction)
+tree_rmse = np.sqrt(tree_mse)
+print(tree_rmse)
+
+#--------------------------Better Evaluation Using Cross-Validation--------------------------
+
+# use the train_test_split() or cross_val_score() function
+scores = cross_val_score(tree_reg, housing_prepared, house_labels, scoring="neg_mean_squared_error", cv=10)
+tree_rmse_scores = np.sqrt(-scores)
+
+#see results
+def display_scores(scores):
+    print("Scores: " + str(scores))
+    print("Mean: " + str(scores.mean()))
+    print("Standard deviation: " + str(scores.std()) + "\n")
+
+display_scores(tree_rmse_scores)
+
+#can save every model that you trained using joblib => ex: joblib.dump(my_model, "my_model.pkl")
