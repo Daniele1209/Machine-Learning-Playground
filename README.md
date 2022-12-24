@@ -1,5 +1,30 @@
 # Machine Learning Playground
 
+<ul>
+    <li>
+        <a href="https://github.com/Daniele1209/Machine-Learning-Playground/tree/master/Books">
+            📔: Projects from Books
+        </a>
+    </li>
+    <li>
+        <a href="https://github.com/Daniele1209/Machine-Learning-Playground/tree/master/Kaggle">
+            📊: Kaggle challenges
+        </a>
+    </li>
+    <li>
+        <a href="https://github.com/Daniele1209/Machine-Learning-Playground/tree/master/Pytorch">
+            🔥: Pytorch projects
+        </a>
+    </li>
+    <li>
+        <a href="https://github.com/Daniele1209/Machine-Learning-Playground/tree/master/Tensorflow">
+            💻: Tensorflow projects
+        </a>
+    </li>
+</ul>
+
+</br>
+
 This repository contains a collection of AI projects using PyTorch, Kaggle challenges, projects from machine learning books, and other projects. The projects cover a wide range of topics, from natural language processing and computer vision to time series analysis and deep reinforcement learning.
 
 The repository is organized into different folders, each containing a different project. The PyTorch projects include implementations of popular deep learning models, such as convolutional neural networks and recurrent neural networks, as well as practical applications of these models in various domains.
