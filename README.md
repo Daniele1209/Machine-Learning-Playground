@@ -17,7 +17,7 @@
         </a>
     </li>
     <li>
-        <a href="https://github.com/Daniele1209/Machine-Learning-Playground/tree/master/Tensorflow">
+        <a href="https://github.com/Daniele1209/Machine-Learning-Playground/tree/master/Tensorflow%20training">
             💻: Tensorflow projects
         </a>
     </li>
