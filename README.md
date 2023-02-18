@@ -12,6 +12,11 @@
         </a>
     </li>
     <li>
+        <a href="https://github.com/Daniele1209/Machine-Learning-Playground/tree/master/NN%20from%20scratch">
+            ⚙️: NN from Scratch
+        </a>
+    </li>
+    <li>
         <a href="https://github.com/Daniele1209/Machine-Learning-Playground/tree/master/Pytorch">
             🔥: Pytorch projects
         </a>
