@@ -1,6 +1,11 @@
 # Machine Learning Playground
 
 <ul>
+        <li>
+        <a href="https://github.com/Daniele1209/Machine-Learning-Playground/tree/master/Scientific_Data_Visualization">
+            📊: Scientific Data Visualization
+        </a>
+    </li>
     <li>
         <a href="https://github.com/Daniele1209/Machine-Learning-Playground/tree/master/Books">
             📔: Projects from Books
