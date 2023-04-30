@@ -1,39 +1,15 @@
 # Machine Learning Playground
 
-<ul>
-        <li>
-        <a href="https://github.com/Daniele1209/Machine-Learning-Playground/tree/master/Scientific_Data_Visualization">
-            📊: Scientific Data Visualization
-        </a>
-    </li>
-    <li>
-        <a href="https://github.com/Daniele1209/Machine-Learning-Playground/tree/master/Books">
-            📔: Projects from Books
-        </a>
-    </li>
-    <li>
-        <a href="https://github.com/Daniele1209/Machine-Learning-Playground/tree/master/Kaggle">
-            📊: Kaggle challenges
-        </a>
-    </li>
-    <li>
-        <a href="https://github.com/Daniele1209/Machine-Learning-Playground/tree/master/NN%20from%20scratch">
-            ⚙️: NN from Scratch
-        </a>
-    </li>
-    <li>
-        <a href="https://github.com/Daniele1209/Machine-Learning-Playground/tree/master/Pytorch">
-            🔥: Pytorch projects
-        </a>
-    </li>
-    <li>
-        <a href="https://github.com/Daniele1209/Machine-Learning-Playground/tree/master/Tensorflow%20training">
-            💻: Tensorflow projects
-        </a>
-    </li>
-</ul>
+| Content                                                                                                                                      | Description                                                                                                                            |
+|----------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------|
+| [📈 Scientific Data Visualization](https://github.com/Daniele1209/Machine-Learning-Playground/tree/master/Scientific%20Data%20Visualization) | Data Visualization notebooks for my Scientific data visualization Uni course                                                           |
+| [📔 Projects from Book](https://github.com/Daniele1209/Machine-Learning-Playground/tree/master/Books)                                        | Projects that I made following the book materials from well known ML related content, mostly from [O'Reilly](https://www.oreilly.com/) |
+| [📊 Kaggle challenges](https://github.com/Daniele1209/Machine-Learning-Playground/tree/master/Kaggle)                                        | Notebooks and scripts related to competitions, training, data analysis on [Kaggle](https://www.kaggle.com/)                            |
+| [⚙️ NN from Scratch](https://github.com/Daniele1209/Machine-Learning-Playground/tree/master/NN%20from%20scratch)                             | Neural Networks implemented from scratch, using only libraries to facilitate mathematical operations on matrices and data handling     |
+| [🔥 Pytorch projects](https://github.com/Daniele1209/Machine-Learning-Playground/tree/master/Pytorch)                                        | Deep learning project using [Pytorch](https://pytorch.org/) as the main library                                                        |
+| [💻 Tensorflow projects](https://github.com/Daniele1209/Machine-Learning-Playground/tree/master/Tensorflow%20training)                       | Deep learning project using [Tensorflow](https://www.tensorflow.org/) as the main library                                              |
 
-</br>
+<br></br>
 
 This repository contains a collection of AI projects using PyTorch, Kaggle challenges, projects from machine learning books, and other projects. The projects cover a wide range of topics, from natural language processing and computer vision to time series analysis and deep reinforcement learning.
 
